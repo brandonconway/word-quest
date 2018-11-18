@@ -23,6 +23,12 @@ export default class Game {
       });
     }
 
+    addOverlay () {
+      let div = document.createElement('div');
+      div.classList.add('overlay');
+      this.element.appendChild(div, this.element);
+    };
+
     addImage (src, styles={}) {
       let img = document.createElement('img');
       img.src = src;
@@ -39,9 +45,21 @@ export default class Game {
       Object.keys(styles).forEach(function (property) {
         div.style[property] = styles[property];
       });
-      div.style.display = "inline-block";
+      div.style.display = "block";
       this.element.appendChild(div, this.element);
       return div;
     }
 
+    addButton (text, styles={}, callback, additional_args={/* key, value*/}) {
+      let button = document.createElement('button');
+      button.innerText = text;
+      Object.keys(styles).forEach(function (property) {
+        button.style[property] = styles[property];
+      });
+      button.addEventListener('click', (e) => {
+        callback.apply(e.target, [this, additional_args]);
+      });
+      this.element.appendChild(button, this.element);
+      return button;
+    };
 }

@@ -1,7 +1,6 @@
 import State from '../components/State.js';
 import {Menu} from './Menu.js';
 
-
 export class Intro extends State {
 
   init () {
@@ -16,7 +15,8 @@ export class Intro extends State {
     });
     this.game.element.addEventListener('click', () => {
       this.game.startState(Menu);
-    })
+    });
+
   }
 
 }
