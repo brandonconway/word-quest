@@ -57,9 +57,32 @@ export default class Game {
         button.style[property] = styles[property];
       });
       button.addEventListener('click', (e) => {
-        callback.apply(e.target, [this, additional_args]);
+        //callback.apply(e.target, [this, additional_args]);
+        let button = e.target;
+        callback.apply(this, [this, {button, ...additional_args}]);
       });
       this.element.appendChild(button, this.element);
       return button;
     };
+
+    addInput (name, type, attributes={}, styles={}, callback, additional_args={}) {
+      let input = document.createElement('input');
+      input.name = name;
+      input.type = type;
+      Object.keys(attributes).forEach(function (property) {
+        input.setAttribute(property, attributes[property]);
+      });
+      Object.keys(styles).forEach(function (property) {
+        input.style[property] = styles[property];
+      });
+      let game = this;
+      console.log(this)
+      let submit = this.addButton('submit', styles, function (e) {
+        callback.apply(this, [game, {input, ...additional_args}]);
+      });
+      this.element.appendChild(input, this.element);
+      this.element.appendChild(submit, input);
+      return input;
+    }
+
 }
