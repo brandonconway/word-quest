@@ -34,12 +34,14 @@ noscript {
 
 div {
   padding: 10px;
+  position: relative;
   margin: auto;
   width: fit-content;
 }
 
 .title {
   border-radius: 4px;
+  font-size: 32px;
   text-shadow: 2px 2px #333;
 }
 

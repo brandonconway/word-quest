@@ -1,97 +1,78 @@
 import State from '../components/State.js';
+import GamePlay from '../states/GamePlay.js';
 
 
 export class Menu extends State {
+
+  data () {
+    return {
+      welcome_html: `
+        <div class='title blue'>
+          Welcome to Word Quest
+        </div>`,
+      step1_html:`
+        <div class='title'>
+            Name your character below
+        </div>
+        <input type='text' id='name'></>
+        <button data-bind='name'>
+          Enter
+        </button>`,
+      step2_html: `
+        <div class='title'>
+          Choose your character type below
+        </div>
+        <button name="frog">Frog</button>
+        <button name="dog">Dog</button>
+        <button name="log">Log</button>`,
+    }
+  }
 
   start () {
     this.game.setBackground('/static/images/level_1.jpg', {
       'backgroundPosition': 'center'
     });
-
     this.game.addOverlay();
-
-    let text = this.game.addText("Welcome to Word Quest", {
-      'fontSize': '32px',
-      'position': 'relative',
-      'top': '30px'
-    });
-    text.classList.add('blue', 'title');
-    // TODO: implement central data store.
+    // TODO: make a central data store
     this.game.character = {};
-
-    this.input = this.showNameCharacterInput();
+    this.showStep1();
   }
 
-  showNameCharacterInput () {
-    this.character_name_prompt = this.game.addText("Name your character below", {
-      'fontSize': '32px',
-      'position': 'relative',
-      'top': '30px'
-    });
-    return this.game.addInput(
-      "name", "text",
-      {},
-      {
-        'position': 'relative',
-        'top': '100px'
-      },
-      (game, input) => {
-        this.setCharacterName(game, input).then(() => {
-            this.char_menu = this.showCharacterTypeMenu();
-        })
-      }
-    )
-  }
-
-  showCharacterTypeMenu () {
-    // TODO: make a remove helper method
-    this.input.parentNode.removeChild(this.input.parentNode.lastChild);
-    this.input.parentNode.removeChild(this.input.parentNode.lastChild);
-    this.character_name_prompt.removeChild(
-      this.character_name_prompt.firstChild);
-    this.charmenu_text = this.game.addText("Choose your character below", {
-      'fontSize': '32px',
-      'position': 'relative',
-      'top': '30px'
-    });
-    this.game.addButton(
-      'DOG', {'margin': '75px 20px'},
-      (game, button) => {
-        this.setCharacterType(game, button).then(() => {
-            this.showCharacterWelcome();
-        })
+  showStep1 () {
+    this.welcome = this.game.addByTemplate(this.welcome_html);
+    this.step1 = this.game.addByTemplate(this.step1_html);
+    let button = document.querySelector('button');
+    button.addEventListener('click', (e) => {
+      this.setCharacterName(e).then(() => {
+        this.showStep2();
       });
-    this.game.addButton(
-      'FROG', {'margin': '75px 20px'}, this.setCharacterType);
-    this.game.addButton(
-      'LOG', {'margin': '75px 20px'}, this.setCharacterType);
+    });
   }
 
-  showCharacterWelcome () {
-    this.charmenu_text.parentNode.removeChild(this.charmenu_text);
-    document.querySelectorAll('button').forEach(
-      e => e.parentNode.removeChild(e)
-    );
-
-    this.game.addText(
-      `Welcome, ${this.game.character.type} ${this.game.character.name}`,
-      {
-        'fontSize': '32px',
-        'position': 'relative',
-        'top': '30px'
-    })
+  showStep2 () {
+    this.step1.parentNode.removeChild(this.step1);
+    this.step2 = this.game.addByTemplate(this.step2_html);
+    this.step2.querySelectorAll('button').forEach((i) => {
+      i.style.margin = '75px 20px'
+      i.addEventListener('click', (e) => {
+        this.setCharacterType(e).then(() => {
+          this.game.startState(GamePlay);
+        });
+      });
+    });
   }
 
-  setCharacterType (game, target) {
-    console.log(target)
-    game.character.type = target.button.innerText.toLowerCase();
+  setCharacterType (e) {
+    this.game.character.type = e.target.name.toLowerCase();
     return new Promise(function(resolve, reject) {
         resolve();
     });
   }
 
-  setCharacterName (game, target) {
-    game.character.name = target.input.value;
+  setCharacterName (e) {
+    let input = e.target.getAttribute('data-bind');
+    input = document.querySelector(`#${input}`);
+    this.game.character.name = input.value;
     return new Promise(function(resolve, reject) {
         resolve();
     });

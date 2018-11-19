@@ -85,4 +85,11 @@ export default class Game {
       return input;
     }
 
+    addByTemplate (template) {
+      let el = document.createElement('div');
+      el.innerHTML = template;
+      this.element.appendChild(el);
+      return el;
+    }
+
 }
